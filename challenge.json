@@ -1,6 +1,6 @@
 {
-	"challenge": "NODE-8-AUTH",
-	"status": "training",
-	"message": "This is a fictional CTF challenge. No real credentials are used.",
-	"hint": "Inspect the request made by the authentication interface."
+  "challenge": "NODE-8-AUTH",
+  "status": "training",
+  "success": false,
+  "message": "Authentication failed. The challenge is still waiting."
 }
