@@ -1,33 +1,44 @@
 const form = document.getElementById("loginForm");
 const output = document.getElementById("output");
 
-if (form && output) {
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    output.textContent = "CONTACTING NODE-8...";
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
 
-    fetch("./challenge.json?ts=" + Date.now())
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
-        }
+  if (!username || !password) {
+    output.textContent =
+      "ERROR // IDENTITY AND ACCESS KEY REQUIRED";
+    return;
+  }
 
-        return response.json();
-      })
-      .then(function (data) {
-        output.textContent =
-          "REQUEST ACCEPTED\n\n" +
-          "CHALLENGE: " + data.challenge + "\n" +
-          "STATUS: " + data.status + "\n\n" +
-          data.message + "\n\n" +
-          data.hint;
-      })
-      .catch(function (error) {
-        output.textContent =
-          "NODE-8 ERROR\n\n" +
-          "Could not load challenge.json\n" +
-          error.message;
-      });
-  });
-}
+  output.textContent = "AUTHENTICATING...";
+
+  try {
+    const response = await fetch(
+      "./challenge.json?user=" +
+      encodeURIComponent(username) +
+      "&pass=" +
+      encodeURIComponent(password),
+      { cache: "no-store" }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      output.textContent =
+        "AUTHENTICATION ACCEPTED\n\n" +
+        result.message;
+    } else {
+      output.textContent =
+        "AUTHENTICATION FAILED\n\n" +
+        result.message;
+    }
+
+  } catch (error) {
+    output.textContent =
+      "NODE-8 ERROR\n\n" +
+      error.message;
+  }
+});
