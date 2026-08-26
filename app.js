@@ -1,41 +1,33 @@
 const form = document.getElementById("loginForm");
 const output = document.getElementById("output");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+if (form && output) {
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
+    output.textContent = "CONTACTING NODE-8...";
 
-  if (!username || !password) {
-    output.textContent =
-      "ERROR // IDENTITY AND ACCESS KEY REQUIRED";
-    return;
-  }
+    fetch("./challenge.json?ts=" + Date.now())
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
 
-  output.textContent =
-    "CONTACTING NODE-8 CHALLENGE SERVICE...";
-
-  try {
-    const response = await fetch("challenge.json", {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error("Challenge unavailable");
-    }
-
-    const challenge = await response.json();
-
-    output.textContent =
-      "REQUEST ACCEPTED\n\n" +
-      "Challenge: " + challenge.challenge + "\n" +
-      "Status: " + challenge.status + "\n\n" +
-      challenge.message + "\n\n" +
-      challenge.hint;
-
-  } catch (error) {
-    output.textContent =
-      "ERROR // NODE-8 CHALLENGE RESOURCE UNAVAILABLE";
-  }
-});
+        return response.json();
+      })
+      .then(function (data) {
+        output.textContent =
+          "REQUEST ACCEPTED\n\n" +
+          "CHALLENGE: " + data.challenge + "\n" +
+          "STATUS: " + data.status + "\n\n" +
+          data.message + "\n\n" +
+          data.hint;
+      })
+      .catch(function (error) {
+        output.textContent =
+          "NODE-8 ERROR\n\n" +
+          "Could not load challenge.json\n" +
+          error.message;
+      });
+  });
+}
