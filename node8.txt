@@ -1,0 +1,2 @@
+NODE-8 STATUS: NOMINAL
+Easter egg: the boring file is sometimes the interesting one.

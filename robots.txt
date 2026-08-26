@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /archives/
+Disallow: /lab-notes/
+Disallow: /maintenance/
