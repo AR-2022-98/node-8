@@ -7,21 +7,36 @@ form.addEventListener("submit", async (e) => {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  // Make the challenge request so it appears in F12 → Network.
-  try {
-    await fetch("./challenge.json?attempt=" + Date.now(), {
-      cache: "no-store"
-    });
-  } catch (error) {
-    console.log("Challenge request failed:", error);
-  }
+  output.textContent = "CONTACTING NODE-8...";
 
-  // Fictional NODE-8 login
-  if (username === "Arsha" && password === "aaggzx57") {
-    window.location.href = "congratulations.html";
-  } else {
+  try {
+    const response = await fetch(
+      "./challenge.json?attempt=" + Date.now(),
+      {
+        method: "GET",
+        cache: "no-store"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    await response.json();
+
+    if (username === "Arsha" && password === "aaggzx57") {
+      output.textContent = "ACCESS GRANTED\n\nRedirecting...";
+
+      setTimeout(() => {
+        window.location.href = "congratulations.html";
+      }, 1000);
+    } else {
+      output.textContent =
+        "AUTHENTICATION FAILED\n\nInvalid identity or access key.";
+    }
+
+  } catch (error) {
     output.textContent =
-      "AUTHENTICATION FAILED\n\n" +
-      "Invalid identity or access key.";
+      "NODE-8 ERROR\n\n" + error.message;
   }
 });
